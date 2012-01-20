@@ -18,11 +18,6 @@ var follow = require('follow')
   , _ = require('underscore')
   ;
   
-// for nodejitsu -- they require a running server
-require('http').createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('database provisioner is up\n');
-}).listen(1337);
 
 var configURL = url.parse(process.env['DATACOUCH_ROOT'] + "/datacouch")
   // , vhostDomain = process.env['DATACOUCH_VHOST']

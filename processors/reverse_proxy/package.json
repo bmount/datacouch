@@ -7,6 +7,7 @@
   "dependencies": {
     "pkginfo": "0.2.2",
     "underscore": "1.1.7"
+    ,"http-proxy": "x.x.x"
   },
   "bundleDependencies": [
     "http-proxy"

@@ -9,6 +9,8 @@
     "underscore": "1.2.0",
     "JSONStream": "0.1.2",
     "transfuse": "0.0.3"
+    ,"jsonparse": "x.x.x"
+    ,"follow": "git://github.com/bvmou/follow.git"
   },
   "bundleDependencies": [
     "follow"

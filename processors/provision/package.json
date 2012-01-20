@@ -9,9 +9,7 @@
     "couchapp": ">= 0.8.1",
     "deferred": ">= 0.2.2",
     "underscore": ">= 1.1.7"
+    ,"follow": "git://github.com/bvmou/follow.git"
   },
-  "bundleDependencies": [
-    "follow"
-  ],
   "version": "0.0.0-5"
 }
