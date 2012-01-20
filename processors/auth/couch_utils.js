@@ -11,8 +11,8 @@ var couch         = process.env['DATACOUCH_ROOT']
 module.exports = function() {
 
   function couchUserDoc(userData) {
-    var salt = crypto.randomBytes(16).toHex()
-      , password = crypto.randomBytes(16).toHex()
+    var salt = 'doesntcount'
+      , password = 'neitherdoesthis'
       ;
     return _.extend(userData, {
          _id: "org.couchdb.user:" + userData.screen_name
