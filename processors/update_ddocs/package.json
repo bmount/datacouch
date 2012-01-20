@@ -1,0 +1,14 @@
+{
+  "name": "updateddocs",
+  "subdomain": "dc_updateddocs",
+  "scripts": {
+    "start": "uploader.js"
+  },
+  "dependencies": {
+    "request": ">= 2.1.1",
+    "underscore": ">= 1.1.7",
+    "deferred": "x.x.x"
+    ,"couchapp": "x.x.x"
+  },
+  "version": "0.0.1-7"
+}
