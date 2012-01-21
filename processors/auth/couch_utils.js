@@ -14,7 +14,6 @@ module.exports = function() {
     var salt = crypto.randomBytes(16).toString('hex')
       , password = crypto.randomBytes(16).toString('hex')
       ;
-    console.log(salt, password);
     return _.extend(userData, {
          _id: "org.couchdb.user:" + userData.screen_name
       , type: "user"
