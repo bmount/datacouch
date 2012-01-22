@@ -21,7 +21,10 @@ var follow = require('follow')
 
 var configURL = url.parse(process.env['DATACOUCH_ROOT'] + "/datacouch")
   // , vhostDomain = process.env['DATACOUCH_VHOST']
-  , couch = configURL.protocol + "//" + configURL.host
+  // api change in http auth across node versions?
+  //, couch = configURL.protocol + "//" + configURL.host
+  , couch = configURL.protocol + "//" + configURL.auth + "@" + configURL.host
+  , couchAuthed = configURL.protocol + "//" + configURL.auth + "@" + configURL.host
   , db = couch + configURL.pathname
   ;
   console.log('follow', db)
