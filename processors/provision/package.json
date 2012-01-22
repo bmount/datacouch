@@ -1,6 +1,6 @@
 {
-  "name": "dc_provision",
-  "subdomain": "dcprovision",
+  "name": "dct_provision",
+  "subdomain": "dctprovision",
   "scripts": {
     "start": "provision_databases.js"
   },
