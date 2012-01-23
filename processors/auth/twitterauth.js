@@ -10,7 +10,9 @@ var couch         = process.env['DATACOUCH_ROOT']
   , h       = {"Content-type": "application/json", "Accept": "application/json"}
   , util  = require('./couch_utils')
   ;
-  
+
+// Several hardcoded datacouch.dev:5914 should be couchVhost
+
 var mock_response =   {
   "default_profile": false,
   "contributors_enabled": false,
@@ -82,11 +84,11 @@ module.exports = function(app, errorHandler) {
       , twitterKey
       , twitterSecret
       , "1.0A"
-      , "http://" + couchVhost + "/login/callback"
+      , "http://" + "datacouch.dev:5914" + "/login/callback"
       , "HMAC-SHA1");
   }
 
-  app.get('/auth/twitter', function(req, res) {
+  app.get('/twitter/auth/twitter', function(req, res) {
     consumer().getOAuthRequestToken(
       function(error, oauth_token, oauth_token_secret, results) {
       if (error) {
@@ -100,7 +102,7 @@ module.exports = function(app, errorHandler) {
     });
   });
 
-  app.get('/auth/twitter/callback', function(req, res) {
+  app.get('/twitter/auth/twitter/callback', function(req, res) {
     consumer().getOAuthAccessToken( req.session.oauth_request_token
         , req.session.oauth_request_token_secret
         , req.query.oauth_verifier
@@ -120,7 +122,7 @@ module.exports = function(app, errorHandler) {
                 } else {
                   util.logUserIn(util.couchUserDoc(JSON.parse(data)), function(userDoc, cookie) {
                     res.header('Set-Cookie', cookie)
-                    res.redirect("http://" + couchVhost + '/#/loggedin!')
+                    res.redirect("http://" + 'datacouch.dev:5914' + '/#/loggedin!')
                   })
                 }
             });
@@ -143,7 +145,7 @@ module.exports = function(app, errorHandler) {
   })
   
   app.get('/auth/token', function(req, res) {
-    request({uri: "http://" + couchVhost + '/api/couch/_session', headers: {cookie: "AuthSession=" + req.cookies['authsession']} }
+    request({uri: "http://" + 'datacouch.dev:5914' + '/api/couch/_session', headers: {cookie: "AuthSession=" + req.cookies['authsession']} }
       , function(e,r,b) {
         if(e) throw new Error(e);
         var user = JSON.parse(b).userCtx.name
