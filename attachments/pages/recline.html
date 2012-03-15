@@ -12,10 +12,9 @@
   <link rel="stylesheet" href="/style/codemirror.css">
   <link rel="stylesheet" href="/style/codemirror-default.css">
   
-  <!-- <script src="/proxy/wiki/socket.io/socket.io.js"></script>  
-  <script src="/proxy/wiki/share/share.js"></script>  
-  <script src="/proxy/wiki/share/textarea.js"></script>   -->
+  <script type='text/javascript' src='/socket.io/socket.io.js'></script>
   <script type="text/javascript" src="/script/deps-min.js"></script>  
+  <script type="text/javascript" src="/script/vm.js"></script>
   <script type="text/javascript" src="/script/util.js"></script>
   <script type="text/javascript" src="/script/costco.js"></script>
   <script type="text/javascript" src="/script/recline.js"></script>
@@ -303,11 +302,11 @@
   
   <script type='text/mustache' class="ddocIframeTemplate">
     <div class="iframeDetails">
-      <span class="title">{{ddoc}}</span> (<a href="http://{{url}}">permalink</a>)
+      <span class="title">{{subdomain}}</span> (<a href="http://{{subdomain}}.burritomap.com">permalink</a>)
     </div>
     <div id="view-panel">
       <div class="iframeContainer">
-        <iframe class="ddocIframe" src="http://{{url}}"></iframe>
+        <iframe class="ddocIframe" src="http://{{subdomain}}.burritomap.com"></iframe>
       </div>
     </div>
   </script>
@@ -325,7 +324,7 @@
     <div class="bottom">
       {{#apps}}
         <ul>
-          <li class="root" data-url="{{url}}" data-ddoc="{{ddoc}}" id="project"><img src="/images/project.png">{{ddoc}}
+          <li class="root" data-subdomain="{{subdomain}}" data-ddoc="{{ddoc}}" id="project"><img src="/images/project.png">{{ddoc}}
           <div id="files">
             <ul>
               <li class="hidden"><img src="/images/ajax-loader.gif">Loading project...
@@ -776,6 +775,5 @@
     </div>
   </script>
   
-  <img src="/analytics.gif">
 </body>
 </html>

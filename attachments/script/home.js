@@ -1,7 +1,7 @@
 // redirect /someuser to /#/someuser
 (function() {
   var user = $.url(window.location.href).segment(1)
-  if (user.length > 0) window.location.href = $.url(window.location.href).attr('base') + '/#/' + user;  
+  if (user.length > 0) window.location.href = $.url(window.location.href).attr('base') + '/#/' + user;
 })()
 
 var app = {
@@ -13,6 +13,7 @@ var app = {
 
 couch.dbPath = app.baseURL + "api/";
 couch.rootPath = couch.dbPath + "couch/";
+app.io = io.connect('/');
 
 /*
   app.routes
@@ -38,16 +39,14 @@ app.routes = {
     },
     activity: function(username) {
       util.render('stream', 'content');
-      monocles.fetchSession().then(function() {
-        if(util.loggedIn()) {
-          monocles.ensureProfile().then(function(profile) {
-            util.render('userControls', 'userControls');
-            util.render('userActions', 'userButtons');
-            util.render( 'loggedIn', 'session_status', {
-              username : profile._id,
-              avatar : profile.avatar
-            });
-          })
+      monocles.fetchProfile().then(function(profile) {
+        if(profile) {
+          util.render('userControls', 'userControls');
+          util.render('userActions', 'userButtons');
+          util.render( 'loggedIn', 'session_status', {
+            username : profile._id,
+            avatar : profile.twitter.profile_image_url
+          });
         } else {
           util.render('smallLogin', 'userControls');
         }
@@ -55,7 +54,7 @@ app.routes = {
       util.showDatasets(username);
       if (username) {
         couch.request({url: app.baseURL + 'api/users/' + username}).then(function(profile) {
-          profile.avatar = profile.avatar.replace('_normal.', '_bigger.');
+          profile.avatar = profile.twitter.profile_image_url.replace('_normal.', '_bigger.');
           util.render('bio', 'infoContainer', profile);
         })
       } else {
@@ -68,13 +67,13 @@ app.routes = {
       window.close();
     },
     "new": function() {
-      monocles.ensureProfile().then(function(profile) {
+      monocles.fetchProfile().then(function(profile) {
         util.show('dialog');
         util.render( 'newDatasetForm', 'modal' );
       })
     },    
     settings: function() {
-      monocles.ensureProfile().then(function(profile) {
+      monocles.fetchProfile().then(function(profile) {
         util.show('dialog');
         util.render( 'editProfileForm', 'modal', profile );
       })    
@@ -85,7 +84,7 @@ app.routes = {
       });
     },
     logout: function() {
-      couch.logout().then(function() {
+      $.getJSON(app.baseURL + 'api/logout').then(function() {
         util.render('empty', 'userButtons');
         util.render('userControls', 'userControls');
         delete app.session;
@@ -148,7 +147,7 @@ app.after = {
     $('.modal-footer .ok').click(function(e) {
       var defaultProperties = {
         _id: "dc" + docID,
-        type: "database",
+        type: "newDatabase",
         user: app.profile._id,
         avatar: app.profile.avatar,
         createdAt: new Date()
@@ -160,27 +159,13 @@ app.after = {
       if (selectedNoun.length > 0) doc.nouns = [app.nouns[selectedNoun]];
 
       util.hide('dialog');
-      couch.request({url: app.baseURL + "api/" + doc._id, type: "PUT", data: JSON.stringify(doc)}).then(function(resp) {
-        var dbID = resp.id
-          , dbName = dbID + "/_design/recline"
-          ;
-        function waitForDB(url) {
-          couch.request({url: url, type: "HEAD"}).then(
-            function(resp, status){
-              window.location = app.baseURL + 'edit/#/' + dbID;
-            },
-            function(resp, status){
-              console.log("not created yet...", resp, status);
-              setTimeout(function() {
-                waitForDB(url);
-              }, 500);
-            }
-          )
-        }
-        util.show('dialog');
-        util.render('loadingMessage', 'modal', {message: "Creating dataset..."});
-        waitForDB(couch.rootPath + dbName);
+      util.render('loadingMessage', 'modal', {message: "Creating dataset..."});
+      app.io.emit('save', doc)
+      app.io.on(doc._id, function (err, data) {
+        if (err) return util.render('loadingMessage', 'modal', {message: "Error... please refresh and try again. " + err})
+        window.location = app.baseURL + 'edit/#/' + doc._id;
       })
+      
     })
   },
   datasets: function() {
@@ -204,16 +189,13 @@ $(function() {
   });
   
   app.defaultRoute = function() {
-    monocles.fetchSession().then( function( session ) {
-      console.log(session)
-      if ( session.userCtx.name ) {
+    monocles.fetchProfile().then(
+      function( profile ) {
         window.location.href = "#/activity";
-      } else if ( util.isAdminParty( session.userCtx ) ) {
-        util.render( 'adminParty', 'content' );
-      } else {
+      }, function() {
         window.location.href = "#/welcome";
       }
-    });
+    );
   }
   
   app.router = Router({

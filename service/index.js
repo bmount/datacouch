@@ -1,35 +1,37 @@
 var tako = require('tako')
+  , router = tako.router()
   , couch = require('couch')
   , http = require('http')
+  , stoopid = require('stoopid')
   , api = require('./api')
+  , auth = require('./auth')
+  , burritomaps = require('./burritomaps')
+  , database_provisioner = require('./database_provisioner')
+  , csv_uploader = require('./csv_uploader')
+  , transformer = require('./transformer')
+  , socks = require('./socks')
   , defaults = require('./defaults')
-  , website = require('./website')
   ;
   
 module.exports = function (opts) {
   var exports = {}
   exports.opts = defaults(opts)
   
-  var t = tako()
+  var t = tako({logger:stoopid.logger('tako'), socketio:{logger:stoopid.logger('socketio')}})
+
   for (i in exports.opts) t[i] = exports.opts[i]
-  
+
   // Run through all the sub applications
+  auth(t)
+  socks(t)
+  database_provisioner(t)
+  csv_uploader(t)
+  transformer(t)
   api(t)
+
+  router.port = exports.opts.port
+  burritomaps(router, t)
+  router.default(t)
   
-  // website must go last because it has a catchall route for file serving
-  website(t)
-  
-  exports.app = t
-  t._listen = t.listen
-  
-  // Setup listen function for default port
-  exports.createServer = function (cb) {
-    t.listen = function (cb) {
-      t._listen(function(handler) {   
-        return http.createServer(handler)
-      }, t.port, cb)
-    }
-    return t
-  }
-  return exports
+  return router
 }
